@@ -13,8 +13,7 @@ namespace WindowsFormsApp1
         public string time_in { get; set; }
 
         public string time_out { get; set; }
-        public string Hours_normal { get; set; }
-        public string Hours_over { get; set; }
+
 
 
 

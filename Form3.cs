@@ -49,6 +49,7 @@ namespace WindowsFormsApp1
         {
             InitializeComponent();
             init();
+
             FormType_isenter = enter;
         }
 
@@ -169,7 +170,7 @@ namespace WindowsFormsApp1
             bool entered = false;
             for (int i = 0; i < EmpRecords.Count; i++)
             {
-                if (EmpRecords[i].date == mydate.date && EmpRecords[i].time_in!="")
+                if (EmpRecords[i].date == mydate.date && EmpRecords[i].time_in!="" && EmpRecords[i].time_out == "")
                 {
                     entered = true;
                 }
@@ -177,13 +178,13 @@ namespace WindowsFormsApp1
           
             if (entered)
             {
-
-                ChickInEmp();
+                ChickOutEmp();
+              
             }
             else
             {
-                ChickOutEmp();
 
+                ChickInEmp();
             }
 
         }
@@ -197,11 +198,12 @@ namespace WindowsFormsApp1
 
             mydate = new Mydate();
 
-            string clientDetails = string.Format("{0},{1},{2},{3},{4}", mydate.date, mydate.time, "","","");
+            string clientDetails = string.Format("{0},{1},{2}", mydate.date, mydate.time, "");
 
 
             File.AppendAllText(Filename, clientDetails);
-            
+
+            richTextBox2.Text = "IN";
         }
 
         private void ChickOutEmp()
@@ -211,9 +213,10 @@ namespace WindowsFormsApp1
 
             string Filename = directpath + current_emp.Code + ".csv";
             var csv = new StringBuilder();
-            var newLine = "date,time_in,time_out,Hours_normal,Hours_over";
+            var newLine = "date,time_in,time_out";
             csv.AppendLine(newLine);
 
+            bool succses_out=false;
 
             for (int i = 0; i < EmpRecords.Count; i++)
             {
@@ -221,34 +224,35 @@ namespace WindowsFormsApp1
                 // but only modify today
                 EmlpyeeAttend r = EmpRecords[i];
 
-                newLine = string.Format("{0},{1},{2},{3},{4}", r.date,r.time_in, r.time_out, r.Hours_normal, r.Hours_over);
+                newLine = string.Format("{0},{1},{2}", r.date,r.time_in, r.time_out);
 
                 if (EmpRecords[i].date == mydate.date && EmpRecords[i].time_in != "" && EmpRecords[i].time_out=="")
                 {
                     mydate = new Mydate();
 
-                    DateTime start = DateTime.ParseExact(EmpRecords[i].time_in, "HH:mm",
-                                        CultureInfo.InvariantCulture);
-                    DateTime timenow = DateTime.ParseExact(mydate.time, "HH:mm",
-                                       CultureInfo.InvariantCulture);
-                    TimeSpan diff1 = timenow - start;
-                    double h = diff1.TotalHours;
-                    int totalhours = (int)h;
+                    //DateTime start = DateTime.ParseExact(EmpRecords[i].time_in, "HH:mm",
+                    //                    CultureInfo.InvariantCulture);
+                    //DateTime timenow = DateTime.ParseExact(mydate.time, "HH:mm",
+                    //                   CultureInfo.InvariantCulture);
+                    //TimeSpan diff1 = timenow - start;
+                    //double h = diff1.TotalHours;
+                    //int totalhours = (int)h;
 
-                    int over = 0;
-                    int normal = 0;
-                    if(totalhours > Standard_hour)
-                    {
-                        over = totalhours - Standard_hour;
-                        normal = Standard_hour;
-                    }
-                    else
-                    {
-                        normal = totalhours;
-                    }
+                    //int over = 0;
+                    //int normal = 0;
+                    //if(totalhours > Standard_hour)
+                    //{
+                    //    over = totalhours - Standard_hour;
+                    //    normal = Standard_hour;
+                    //}
+                    //else
+                    //{
+                    //    normal = totalhours;
+                    //}
 
 
-                    newLine = string.Format("{0},{1},{2},{3},{4}", r.date, r.time_in,mydate.time, normal, over);
+                    newLine = string.Format("{0},{1},{2}", r.date, r.time_in,mydate.time);
+                    succses_out = true;
                 }
 
                 csv.AppendLine(newLine);
@@ -258,8 +262,17 @@ namespace WindowsFormsApp1
 
             File.WriteAllText(Filename, csv.ToString());
 
+            if (succses_out)
+            {
+                richTextBox2.Text = "OUT";
+            }
+            else
+            {
+                richTextBox2.Text = "العميل له حدور";
+            }
+          
 
-        
+
         }
 
 

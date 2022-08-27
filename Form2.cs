@@ -127,7 +127,7 @@ namespace WindowsFormsApp1
             /// new file called code.csv
             /// date, time_in , time out , Hours_normal , Hours_over
             var csv = new StringBuilder();
-            var newLine = "date,time_in,time_out,Hours_normal,Hours_over";
+            var newLine = "date,time_in,time_out";
             csv.AppendLine(newLine);
 
 
