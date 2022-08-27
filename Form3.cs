@@ -42,13 +42,14 @@ namespace WindowsFormsApp1
         List<String> Codes = new List<string>() ;
         Mydate mydate;
         string directpath;
-
+        bool FormType_isenter;
         int Standard_hour = 8;
 
-        public Form3()
+        public Form3(bool enter)
         {
             InitializeComponent();
             init();
+            FormType_isenter = enter;
         }
 
         private void init()
@@ -62,65 +63,36 @@ namespace WindowsFormsApp1
             }
             for (int i = 0; i < records.Count; i++)
             {
-                Names.Add(records[i].Name);
+                Names.Add(records[i].Name); 
                 Codes.Add(records[i].Code);
             }
 
             Names.Add("");
             Codes.Add("");
 
-            comboBox1.DataSource = Names;
             comboBox2.DataSource = Codes;
 
-            comboBox1.SelectedIndex = Names.Count - 1;
             comboBox2.SelectedIndex = Names.Count - 1;
-            switchbuttonoff(button1);
-            switchbuttonoff(button2);
+          
 
 
 
         }
         private void ClearSearch()
         {
-            textBox1.Text = "";
-            textBox4.Text = "";
-
-
-            comboBox1.SelectedIndex = Names.Count - 1;
             comboBox2.SelectedIndex = Names.Count - 1;
-            switchbuttonoff(button1);
-            switchbuttonoff(button2);
-       
         }
-
-        private void textBox1_Enter(object sender, EventArgs e)
-        {
-            ClearSearch();
-        }
-
-        private void textBox4_Enter(object sender, EventArgs e)
-        {
-            ClearSearch();
-        }
-
-        private void comboBox1_Enter(object sender, EventArgs e)
-        {
-            comboBox2.SelectedIndex = Names.Count - 1;
-            ClearSearch();
-        }
-
         private void comboBox2_Enter(object sender, EventArgs e)
         {
-            comboBox1.SelectedIndex = Names.Count - 1;
-            ClearSearch();
+            //ClearSearch();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
+            // بحث
             string code = search();
             int number;
-            switchbuttonoff(button1);
-            switchbuttonoff(button2);
+      
 
             bool success = int.TryParse(code, out number);
             if (success)
@@ -145,28 +117,10 @@ namespace WindowsFormsApp1
 
         private string search()
         {
-            string found_name="";
+           
             string found_code="";
 
-            if (comboBox1.SelectedIndex != Names.Count - 1)
-            {
-                found_name = comboBox1.Text;
-
-
-                for (int i = 0; i < records.Count; i++)
-                {
-                    if (found_name == records[i].Name)
-                    {
-                        found_code = records[i].Code;
-                    }
-                }
-
-                if (found_code == "")
-                {
-                    return "الاسم غير صحيح";
-                }
-                return found_code;
-            }
+    
 
             if (comboBox2.SelectedIndex != Names.Count - 1)
             {
@@ -181,52 +135,6 @@ namespace WindowsFormsApp1
                 }
                 return "الكود غير صحيح";
             }
-
-
-
-
-
-            found_code = "";
-            if (textBox1.Text != "")
-            {
-                found_name = textBox1.Text;
-
-
-                for (int i = 0; i < records.Count; i++)
-                {
-                    if (found_name == records[i].Name)
-                    {
-                        found_code = records[i].Code;
-                    }
-                }
-
-                if(found_code=="")
-                {
-                    return "الاسم غير صحيح";
-                }
-                return found_code;
-            }
-
-
-            found_code = "";
-            if (textBox4.Text != "")
-            {
-                found_code = textBox4.Text;
-
-                for (int i = 0; i < records.Count; i++)
-                {
-                    if (found_code == records[i].Code)
-                    {
-                        return found_code;
-                    }
-                }
-                return "الكود غير صحيح";
-
-
-            }
-
-          
-          
 
 
             return "حدث خطا";
@@ -266,35 +174,23 @@ namespace WindowsFormsApp1
                     entered = true;
                 }
             }
-
-            if(entered)
+          
+            if (entered)
             {
-                switchbuttonon(button2);
-               
+
+                ChickInEmp();
             }
             else
             {
-                switchbuttonon(button1);
+                ChickOutEmp();
+
             }
-      
-
 
         }
 
 
-        private void switchbuttonon(Button b)
-        {
-            b.Enabled = true;
-            b.BackColor = Color.Green;
-        }
 
-        private void switchbuttonoff(Button b)
-        {
-            b.Enabled = false;
-            b.BackColor= Color.Gray;
-        }
-
-        private void button1_Click(object sender, EventArgs e)
+        private void ChickInEmp()
         {
             // enter 
             string Filename = directpath + current_emp.Code + ".csv";
@@ -308,8 +204,9 @@ namespace WindowsFormsApp1
             
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void ChickOutEmp()
         {
+            // leave
             TimeSpan interval = new TimeSpan(5, 00, 00); // 02:14:15
 
             string Filename = directpath + current_emp.Code + ".csv";
@@ -320,6 +217,8 @@ namespace WindowsFormsApp1
 
             for (int i = 0; i < EmpRecords.Count; i++)
             {
+                // wrirte every record
+                // but only modify today
                 EmlpyeeAttend r = EmpRecords[i];
 
                 newLine = string.Format("{0},{1},{2},{3},{4}", r.date,r.time_in, r.time_out, r.Hours_normal, r.Hours_over);
@@ -360,8 +259,24 @@ namespace WindowsFormsApp1
             File.WriteAllText(Filename, csv.ToString());
 
 
-            // leave
+        
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         private void button4_Click(object sender, EventArgs e)
         {
@@ -381,6 +296,11 @@ namespace WindowsFormsApp1
             {
                 MessageBox.Show("over "+diff1.TotalHours);
             }
+        }
+
+        private void richTextBox2_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
